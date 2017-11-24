@@ -25,7 +25,7 @@
   - Se houver endereço para o CEP digitado, mostre a mensagem:
   "Endereço referente ao CEP [CEP]:"
   - Utilize a lib DOM criada anteriormente para facilitar a manipulação e
-  adicionar as informações em tela.
+  adicionar as informações em tela..
   */
   var $form = document.querySelector('[data-js="form"]');
   var $inputSearchCep = document.querySelector('[data-js="cep-input"]');
