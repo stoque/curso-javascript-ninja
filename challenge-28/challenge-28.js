@@ -1,3 +1,5 @@
+(function() {
+  'use strict';
   /*
   No HTML:
   - Crie um formulário com um input de texto que receberá um CEP e um botão
@@ -25,3 +27,57 @@
   - Utilize a lib DOM criada anteriormente para facilitar a manipulação e
   adicionar as informações em tela.
   */
+  var $form = document.querySelector('[data-js="form"]');
+  var $inputSearchCep = document.querySelector('[data-js="cep-input"]');
+  var $inputLogradouro = document.querySelector('[data-js="logradouro"]');
+  var $inputBairro = document.querySelector('[data-js="bairro"]');
+  var $inputEstado = document.querySelector('[data-js="estado"]');
+  var $inputCidade = document.querySelector('[data-js="cidade"]');
+  var $inputCEP = document.querySelector('[data-js="cep"]');
+  var $buttonSearch = document.querySelector('[data-js="action"]');
+  var $message = document.querySelector('[data-js="message"]');
+  var ajax;
+
+  $form.addEventListener('submit', searchCEP, false);
+
+  function getAddress() {
+    var cep = $inputSearchCep.value;
+    ajax = new XMLHttpRequest;
+    ajax.open('GET', 'https://viacep.com.br/ws/'+ cep +'/json/', true);
+    ajax.send();
+    ajax.addEventListener('readystatechange', resolveData, true)
+  }
+  
+  function resolveData() {
+    var cep = $inputSearchCep.value;
+    var message;
+
+    if (ajax.readyState === 3) {
+      message = 'Buscando informações para o CEP ' + cep + '...';
+    } else if (ajax.readyState === 4) {
+      message = '';
+    }
+
+    if (ajax.readyState === 4 && ajax.status === 200) {
+      var data = JSON.parse(ajax.response);
+      $inputLogradouro.value = data.logradouro;
+      $inputBairro.value = data.bairro;
+      $inputCidade.value = data.localidade;
+      $inputEstado.value = data.uf;
+      $inputCEP.value = data.cep;
+    } else {
+      message = 'Não encontramos o endereço para o CEP ' + cep + '.';
+      $inputLogradouro.value = '';
+      $inputBairro.value = '';
+      $inputCidade.value = '';
+      $inputEstado.value = '';
+      $inputCEP.value = '';
+    }
+    $message.innerText = message;
+  }
+
+  function searchCEP(event) {
+    event.preventDefault();
+    getAddress();
+  }
+})();
