@@ -1,5 +1,4 @@
 (function() {
-  'use strict';
   /*
   No HTML:
   - Crie um formulário com um input de texto que receberá um CEP e um botão
@@ -9,7 +8,7 @@
   preenchidas com os dados da requisição feita no JS.
   - Crie uma área que receberá mensagens com o status da requisição:
   "Carregando, sucesso ou erro."
-
+  
   No JS:
   - O CEP pode ser entrado pelo usuário com qualquer tipo de caractere, mas
   deve ser limpo e enviado somente os números para a requisição abaixo;
@@ -27,57 +26,61 @@
   - Utilize a lib DOM criada anteriormente para facilitar a manipulação e
   adicionar as informações em tela..
   */
-  var $form = document.querySelector('[data-js="form"]');
-  var $inputSearchCep = document.querySelector('[data-js="cep-input"]');
-  var $inputLogradouro = document.querySelector('[data-js="logradouro"]');
-  var $inputBairro = document.querySelector('[data-js="bairro"]');
-  var $inputEstado = document.querySelector('[data-js="estado"]');
-  var $inputCidade = document.querySelector('[data-js="cidade"]');
-  var $inputCEP = document.querySelector('[data-js="cep"]');
-  var $buttonSearch = document.querySelector('[data-js="action"]');
-  var $message = document.querySelector('[data-js="message"]');
-  var ajax;
+  'use strict';
 
-  $form.addEventListener('submit', searchCEP, false);
+  const $inputSearch = document.querySelector('[data-js="input"]');
+  const $action = document.querySelector('[data-js="action"]');
+  const $form = document.querySelector('[data-js="form"]');
+  const $status = document.querySelector('[data-js="status"]');
+  const $cep = document.querySelector('[data-js="cep"]');
+  const $address = document.querySelector('[data-js="address"]');
+  const $district = document.querySelector('[data-js="district"]');
+  const $state = document.querySelector('[data-js="state"]');
+  const $city = document.querySelector('[data-js="city"]');
 
-  function getAddress() {
-    var cep = $inputSearchCep.value;
-    ajax = new XMLHttpRequest;
-    ajax.open('GET', 'https://viacep.com.br/ws/'+ cep +'/json/', true);
-    ajax.send();
-    ajax.addEventListener('readystatechange', resolveData, true)
+  const ajax = new XMLHttpRequest;
+
+  $form.addEventListener('submit', formSubmit, false);
+
+  
+  function formSubmit(event) {
+    event.preventDefault();
+    let cep = $inputSearch.value;
+    getAddress(cep);
   }
   
-  function resolveData() {
-    var cep = $inputSearchCep.value;
-    var message;
+  function getAddress(cep) {
+    cep = cep.match(/\d+/g).join('');
+    ajax.open('GET', 'https://viacep.com.br/ws/' +  cep + '/json/');
+    ajax.send();
+    ajax.addEventListener('readystatechange', function() {
+      let state = ajax.readyState;
+      let status = ajax.status;
 
-    if (ajax.readyState === 3) {
-      message = 'Buscando informações para o CEP ' + cep + '...';
-    } else if (ajax.readyState === 4) {
-      message = '';
-    }
+      $status.innerHTML = 'Buscando informações para o CEP ' + cep + '...';
+    
+      if (isRequestOk(state, status)) {
+        let data = JSON.parse(ajax.responseText);
 
-    if (ajax.readyState === 4 && ajax.status === 200) {
-      var data = JSON.parse(ajax.response);
-      $inputLogradouro.value = data.logradouro;
-      $inputBairro.value = data.bairro;
-      $inputCidade.value = data.localidade;
-      $inputEstado.value = data.uf;
-      $inputCEP.value = data.cep;
-    } else {
-      message = 'Não encontramos o endereço para o CEP ' + cep + '.';
-      $inputLogradouro.value = '';
-      $inputBairro.value = '';
-      $inputCidade.value = '';
-      $inputEstado.value = '';
-      $inputCEP.value = '';
-    }
-    $message.innerText = message;
+        $status.innerHTML = 'Endereço referente ao CEP ' + data.cep + ':'
+
+        $address.innerHTML = data.logradouro;
+        $district.innerHTML = data.bairro;
+        $state.innerHTML = data.uf;
+        $city.innerHTML = data.localidade;
+      } else {
+        $status.innerHTML = 'Não encontramos o endereço para o CEP ' + cep + '.';
+      }
+    })
   }
-
-  function searchCEP(event) {
-    event.preventDefault();
-    getAddress();
+  
+  function isRequestOk(state, status) {
+    if (state === 4) {
+      if (status === 200) {
+        return true; 
+      } else {
+        return false;
+      }
+    }
   }
 })();
