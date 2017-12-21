@@ -5,36 +5,34 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Challenge 28</title>
-  <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
 </head>
 <body>
   <style>
-    html,
     body {
-      height: 100%;
-    }
-
-    body {
-      font-family: 'Open Sans', sans-serif;
+      font-family: 'Verdana', sans-serif
     }
   </style>
 
+  <form data-js="form-cep">
+    <label for="">CEP:</label>
+    <input type="text" data-js="input-cep" placeholder="Insira seu CEP">
 
-  <form data-js="form">
-    <input type="text" placeholder="Digite seu CEP" data-js="input" required>
-    <button type="submit" data-js="action">Buscar</button>
+    <div class="messages-wrapper">
+      <p class="message" data-js="message"></p>
+    </div>
+
+    <label for="">Logradouro:</label>
+    <input type="text" data-js="input-logradouro" placeholder="Insira seu logradouro">
+    <br>
+    <label for="">Bairro:</label>
+    <input type="text" data-js="input-bairro" placeholder="Insira seu bairro">
+    <br>
+    <label for="">Estado:</label>
+    <input type="text" data-js="input-estado" placeholder="Insira seu estado">
+    <br>
+    <label for="">Cidade:</label>
+    <input type="text" data-js="input-cidade" placeholder="Insira sua cidade">
   </form>
-
-  <div class="loading-wrapper">
-    <p data-js="status"></p>
-  </div>
-
-  <div class="address-wrapper">
-    <p>Endereço: <span data-js="address"></span></p>
-    <p>Bairro: <span data-js="district"></span></p>
-    <p>Estado: <span data-js="state"></span></p>
-    <p>Cidade: <span data-js="city"></span></p>
-  </div>
 
   <script src="challenge-28.js"></script>
 </body>

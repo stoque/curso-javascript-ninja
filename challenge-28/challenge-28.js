@@ -1,4 +1,4 @@
-(function() {
+(function(win, doc) {
   /*
   No HTML:
   - Crie um formulário com um input de texto que receberá um CEP e um botão
@@ -28,59 +28,74 @@
   */
   'use strict';
 
-  const $inputSearch = document.querySelector('[data-js="input"]');
-  const $action = document.querySelector('[data-js="action"]');
-  const $form = document.querySelector('[data-js="form"]');
-  const $status = document.querySelector('[data-js="status"]');
-  const $cep = document.querySelector('[data-js="cep"]');
-  const $address = document.querySelector('[data-js="address"]');
-  const $district = document.querySelector('[data-js="district"]');
-  const $state = document.querySelector('[data-js="state"]');
-  const $city = document.querySelector('[data-js="city"]');
-
+  const $inputCEP = document.querySelector('[data-js="input-cep"]');
+  const $message = document.querySelector('[data-js="message"]');
+  const $inputLogradouro = document.querySelector('[data-js="input-logradouro"]');
+  const $inputBairro = document.querySelector('[data-js="input-bairro"]');
+  const $inputCidade = document.querySelector('[data-js="input-cidade"]');
+  const $inputEstado = document.querySelector('[data-js="input-estado"]');
   const ajax = new XMLHttpRequest;
 
-  $form.addEventListener('submit', formSubmit, false);
+  $inputCEP.addEventListener('blur', getCEP, false);
 
-  
-  function formSubmit(event) {
-    event.preventDefault();
-    let cep = $inputSearch.value;
-    getAddress(cep);
-  }
-  
-  function getAddress(cep) {
-    cep = cep.match(/\d+/g).join('');
-    ajax.open('GET', 'https://viacep.com.br/ws/' +  cep + '/json/');
-    ajax.send();
-    ajax.addEventListener('readystatechange', function() {
-      let state = ajax.readyState;
-      let status = ajax.status;
-
-      $status.innerHTML = 'Buscando informações para o CEP ' + cep + '...';
-    
-      if (isRequestOk(state, status)) {
-        let data = JSON.parse(ajax.responseText);
-
-        $status.innerHTML = 'Endereço referente ao CEP ' + data.cep + ':'
-
-        $address.innerHTML = data.logradouro;
-        $district.innerHTML = data.bairro;
-        $state.innerHTML = data.uf;
-        $city.innerHTML = data.localidade;
-      } else {
-        $status.innerHTML = 'Não encontramos o endereço para o CEP ' + cep + '.';
-      }
-    })
-  }
-  
-  function isRequestOk(state, status) {
-    if (state === 4) {
-      if (status === 200) {
-        return true; 
-      } else {
-        return false;
-      }
+  function getCEP(event) {
+    const cep = cleanInputCEP();
+    const url = cleanCEPString('https://viacep.com.br/ws/[CEP]/json/');
+    ajax.open('GET', url);
+    if (cep) {
+      $message.textContent = getMessages('loading');
+      ajax.send();
+      ajax.addEventListener('readystatechange', handleAjaxStateChange, false);
     }
   }
-})();
+  
+  function handleAjaxStateChange() {
+    if (isRequestOK()) {
+      $message.textContent = getMessages('success');
+      fillAddressInputs();
+    } else {
+      $message.textContent = getMessages('error');
+      cleanAddressInputs();
+    }
+  }
+
+  function cleanInputCEP() {
+    const regex = /\D/g;
+    return $inputCEP.value.replace(regex, '');
+  }
+
+  function cleanCEPString(string) {
+    return string.replace('[CEP]', cleanInputCEP())
+  }
+
+  function fillAddressInputs() {
+    const data = JSON.parse(ajax.responseText);
+    $inputLogradouro.value = data.logradouro;
+    $inputBairro.value = data.bairro;
+    $inputCidade.value = data.localidade;
+    $inputEstado.value = data.uf;
+  }
+  
+  function cleanAddressInputs() {
+    $inputLogradouro.value = '';
+    $inputBairro.value = '';
+    $inputCidade.value = '';
+    $inputEstado.value = '';
+  }
+  
+  function isRequestOK() {
+    if (ajax.readyState === 4 && ajax.status === 200) {
+      return true;
+    }
+  }
+
+  function getMessages(type) {
+    const messages = {
+      loading: 'Buscando informações para o CEP [CEP]...',
+      success: 'Endereço referente ao CEP [CEP]:',
+      error: 'Não encontramos o endereço para o CEP [CEP].'
+    };
+
+    return cleanCEPString(messages[type]);
+  }
+})(window, document);
