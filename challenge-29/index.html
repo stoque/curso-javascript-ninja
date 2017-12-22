@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Car APP</title>
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Condensed" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1 data-js="name">-</h1>
+    <p data-js="phone">-</p>
+  </header>
+
+  <main>
+    <form data-js="form">
+      <input type="text" data-js="image-input" placeholder="Insira a imagem do carro">
+      <input type="text" data-js="model-input" placeholder="Insira o modelo do carro">
+      <input type="text" data-js="year-input" placeholder="Insira o ano do carro">
+      <input type="text" data-js="plate-input" placeholder="Insira a placa do carro">
+      <input type="text" data-js="color-input" placeholder="Insira a cor do carro">
+      <button type="submit">Cadastrar</button>
+    </form>
+  
+    <table>
+      <thead>
+        <tr>
+          <th>Imagem</th>
+          <th>Modelo</th>
+          <th>Ano</th>
+          <th>Placa</th>
+          <th>Cor</th>
+        </tr>
+      </thead>
+      <tbody data-js="results-table">
+        <!-- <tr>
+          <td>Imagem</td>
+          <td>Honda Civic</td>
+          <td>2017</td>
+          <td>LIN-6698</td>
+          <td>Preto</td>
+        </tr> -->
+      </tbody>
+    </table>
+  </main>
+
+  <script src="challenge-29.js"></script>
+</body>
+</html>

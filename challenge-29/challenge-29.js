@@ -36,4 +36,89 @@
   que será nomeado de "app".
   */
 
+  var app = (function () {
+    return {
+      init: function() {
+        this.initEvents();
+        this.getCompanyInfo();
+      },
+
+      initEvents: function initEvents() {
+        var $formNewCar = document.querySelector('[data-js="form"]');
+        $formNewCar.addEventListener('submit', this.handleFormSubmit, false);
+      },
+
+      handleFormSubmit: function handleFormSubmit(e) {
+        e.preventDefault();
+        var $resultsTable = document.querySelector('[data-js="results-table"]');
+        $resultsTable.appendChild(app.createNewCar());
+        app.clearInputs();
+        app.setFocusInFirstInput();
+      },
+
+      createNewCar: function createNewCar() {
+        var $fragment = document.createDocumentFragment();
+        var $tr = document.createElement('tr');
+        var $tdImage = document.createElement('td');
+        var $tdModel = document.createElement('td');
+        var $tdYear = document.createElement('td');
+        var $tdPlate = document.createElement('td');
+        var $tdColor = document.createElement('td');
+        var $image = document.createElement('img');
+
+        $image.src = document.querySelector('[data-js="image-input"]').value;
+        $tdModel.textContent = document.querySelector('[data-js="model-input"]').value;
+        $tdYear.textContent = document.querySelector('[data-js="year-input"]').value;
+        $tdPlate.textContent = document.querySelector('[data-js="plate-input"]').value;
+        $tdColor.textContent = document.querySelector('[data-js="color-input"]').value;
+
+        $tdImage.appendChild($image);
+        $tr.appendChild($tdImage);
+        $tr.appendChild($tdModel);
+        $tr.appendChild($tdYear);
+        $tr.appendChild($tdPlate);
+        $tr.appendChild($tdColor);
+        return $fragment.appendChild($tr);
+      },
+
+      clearInputs: function clearInputs() {
+        document.querySelector('[data-js="image-input"]').value = '';
+        document.querySelector('[data-js="model-input"]').value = '';
+        document.querySelector('[data-js="year-input"]').value = '';
+        document.querySelector('[data-js="plate-input"]').value = '';
+        document.querySelector('[data-js="color-input"]').value = '';
+      },
+
+      setFocusInFirstInput() {
+        var $firstInput = document.querySelector('input');
+        $firstInput.focus();
+      },
+      
+      getCompanyInfo: function getCompanyInfo() {
+        var ajax = new XMLHttpRequest;
+        ajax.open('GET', './company.json', true);
+        ajax.send();
+
+        ajax.addEventListener('readystatechange', this.handleCompanyInfo, false);
+      },
+
+      handleCompanyInfo: function handleCompanyInfo() {
+        if (app.isRequestOK.call(this)) {
+          var data = JSON.parse(this.responseText);
+          var $companyName = document.querySelector('[data-js="name"]');
+          var $companyPhone = document.querySelector('[data-js="phone"]');
+
+          $companyName.textContent = data.name;
+          $companyPhone.textContent = data.phone;
+        } else {
+        }
+      },
+
+      isRequestOK: function isRequestOK() {
+        return this.readyState === 4 && this.status === 200;
+      }
+    }
+  })();
+
+  app.init();
 })();
